@@ -33,16 +33,37 @@ if selected == "Home":
 elif selected == "Player Analysis":
     st.title("Player Analysis")
     player = st.selectbox("Select Player", df["Player"])
-    pdata = df[df["Player"]== player].reset_index()
+    pdata = df[df["Player"]== player]
 
-    values=pdata[["100","50","4s","6s"]].iloc[0]
-
+    df2=pdata[["Runs","Matches","innings","6s","4s","100","50","Ave","High_score"]]
+    df2=df2.T.reset_index()
+    st.dataframe(df2)
     fig=px.bar(
-        x=values,
-        y=values.index
+        df2,
+        x="index",
+        y=df2.columns[1],color="index",
     )
+    st.plotly_chart(fig, use_container_width=True)
 
-    fig.update_xaxes(range=[0, values.max() + 20])
+    col4,col5,col6,col7 = st.columns(4)
+    # ------ Key Metrics------#
+    total_runs = pdata["Runs"].sum()
+    total_matches = pdata["Matches"].sum()
+    hundreds = pdata["100"].sum()
+    sixties = pdata["6s"].sum()
+    col4.metric(label="Total Runs", value=total_runs)
+    col5.metric(label="Total Matches", value=total_matches)
+    col6.metric(label="Total 100s", value=hundreds)
+    col7.metric(label="Total 6s", value=sixties)
+
+    # values=pdata[["100","50","4s","6s"]].iloc[0]
+
+    # fig=px.bar(
+    #     x=values,
+    #     y=values.index
+    # )
+
+    # fig.update_xaxes(range=[0, values.max() + 20])
 
 
     # stats=["100","50","4s","6s"]
@@ -60,17 +81,9 @@ elif selected == "Player Analysis":
         
 
     # ) 
-    col4,col5,col6,col7 = st.columns(4)
-    total_runs = pdata["Runs"].sum()
-    total_matches = pdata["Matches"]
-    hundreds = pdata["100"].sum()
-    sixties = pdata["6s"].sum()
-    col4.metric(label="Total Runs", value=total_runs)
-    col5.metric(label="Total Matches", value=total_matches)
-    col6.metric(label="Total 100s", value=hundreds)
-    col7.metric(label="Total 6s", value=sixties)
+   
 
-    st.plotly_chart(fig, use_container_width=True)
+    # st.plotly_chart(fig, use_container_width=True)
     
 
 #------ Country Insights-------#
@@ -84,6 +97,20 @@ elif selected == "Country Insights":
         values="Runs",
     )
     st.plotly_chart(fig, use_container_width=True)
+
+    country_select = st.selectbox("Select Country", df["Country"].unique())
+
+    cdata = df[df["Country"] == country_select]
+    fig_runs=px.pie(
+         cdata,
+         names="Player",
+         values="Runs",
+    )
+    st.plotly_chart(fig_runs, use_container_width=True)
+
+
+
+
 
 #------ Comparison-------#
 
